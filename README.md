@@ -57,12 +57,14 @@ NOTE: this will query the current in-memory object's state, not the database sta
 
 ### Module methods
 You can deactivate the publishing logic entirely for a block by using the `deactivated` method:
+
     MongoMapper::Plugins::PublishingLogic.deactivated do
       published = Page.published # will always return all Page record
       unpublished = Page.unpublished # will always return an empty query
     end
 
 Also, you can switch a block with a boolean variable:
+
     is_activated = false
     MongoMapper::Plugins::PublishingLogic.with_status(is_activated) do
       # publishing logic will be active/deactive depending on the with_status() param
