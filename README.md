@@ -34,6 +34,8 @@ This will add some keys, methods and scopes.
 #### `:published_flag`
 If this is set to false (default), the record will always count as unpublished.
 
+This attribute defaults to `false`.
+
     p = Page.new(title: 'published', published_flag: true, publishing_date: Time.now.to_date)
     p.published? # => true
 
@@ -42,6 +44,8 @@ If this is set to false (default), the record will always count as unpublished.
 
 #### `:publishing_date`
 The record will count as published as soon as the current date is greater or equal than this key's value.
+
+This attribute defaults to `ActiveSupport::TimeZone["UTC"].now.beginning_of_day.to_date`.
 
 NOTE: the record will still be considered unpublished if `published_flag` is false.
 
