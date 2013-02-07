@@ -82,7 +82,7 @@ Returns all records that are considered unpublished concerning their persisted s
 
     Page.create(title: 'published', published_flag: true, publishing_date: Time.now.to_date)
     Page.create(title: 'unpublished', published_flag: false, publishing_date: Time.now.to_date)
-    Page.published.all.map(&:title) # => ['unpublished']
+    Page.unpublished.all.map(&:title) # => ['unpublished']
 
 ### Methods
 
