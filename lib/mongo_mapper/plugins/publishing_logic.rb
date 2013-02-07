@@ -29,11 +29,13 @@ module MongoMapper
         }
 
         # prepared: published, but publishing start date is not yet reached
+        # TODO test, doc
         scope :prepared, lambda {
           unpublished.where(published_flag: true, :publishing_date.gt => PublishingLogic::today)
         }
 
         # expired: published, but publishing end date is reached
+        # TODO test, doc
         scope :expired, lambda {
           unpublished.where(
             published_flag: true,
@@ -67,6 +69,18 @@ module MongoMapper
 
       module ModuleMethods
 
+        # TODO test
+        def activate
+          PublishingLogic::publishing_logic_active = true
+        end
+
+
+        # TODO test
+        def deactivate
+          PublishingLogic::publishing_logic_active = false
+        end
+
+
         # runs a block with activated or deactivated publishing logic,
         # depending on param active_flag
         def with_status(active_flag = true, &block)
@@ -77,10 +91,10 @@ module MongoMapper
         # runs a block with deactivated publishing logic
         def deactivated(&block)
           begin
-            PublishingLogic::publishing_logic_active = false
+            PublishingLogic::deactivate
             yield
           ensure
-            PublishingLogic::publishing_logic_active = true
+            PublishingLogic::activate
           end
         end
 
