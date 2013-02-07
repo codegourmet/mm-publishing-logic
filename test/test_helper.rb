@@ -1,29 +1,33 @@
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
 
-require File.expand_path("../dummy/config/environment.rb",  __FILE__)
-require "rails/test_help"
+require 'rubygems'
+require 'test/unit'
+require 'factory_girl'
 
-Rails.backtrace_cleaner.remove_silencers!
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.dirname(__FILE__))
 
-# Load support files
-Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
+require 'mongo_mapper'
 
-# Load fixtures from the engine
-if ActiveSupport::TestCase.method_defined?(:fixture_path=)
-  ActiveSupport::TestCase.fixture_path = File.expand_path("../fixtures", __FILE__)
-end
+MongoMapper.database = "mm_publishing_logic-test"
+
+Dir["#{File.dirname(__FILE__)}/models/*.rb"].each {|file| require file}
+Dir["#{File.dirname(__FILE__)}/factories/*.rb"].each {|file| require file}
+
+TODAY = ActiveSupport::TimeZone["UTC"].now.beginning_of_day.to_date
+PAST = TODAY - 2.days
+FUTURE = TODAY + 2.days
 
 # mongomapper doesn't have transactions, so testing db will
 # accumulate data (and tests might fail on second run)
 module MongoMapperTestingFix
   # Drop all columns after each test case.
   def teardown
-    MongoMapper.database.collections.each do |coll|
-      coll.remove
+    MongoMapper.database.collections.each do |collection|
+      collection.drop unless collection.name =~ /(.*\.)?system\..*/
     end
   end
-
 
   # Make sure that each test case has a teardown
   # method to clear the db after each test.
