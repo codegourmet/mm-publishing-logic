@@ -92,9 +92,20 @@ Will return the current state.
 NOTE: this will query the current in-memory object's state, not the database state. Changes to any of the publishing logic attributes will be reflected.
 
 ### Module methods
-You can deactivate the publishing logic entirely for a block by using the `deactivated` method:
+You can deactivate the publishing logic entirely for a the current request or for a block by using some module methods:
+
+#### `activate`/`deactivate`
+You can use this to manipulate the publishing logic state permanently, for example in your controller if you want to implement an admin preview.
+
+    class ApplicationController < ActionController::Base
+      before_filter do
+        MongoMapper::Plugins::PublishingLogic.deactivate if (params[:preview] and current_admin)
+      end
+    end
 
 #### `deactivated`
+You can use this to deactivate the publishing logic for the duration of a block:
+
     MongoMapper::Plugins::PublishingLogic.deactivated do
       published = Page.published # will always return all Page record
       unpublished = Page.unpublished # will always return an empty query
@@ -106,16 +117,6 @@ Also, you can switch a block with a boolean variable:
     is_activated = false
     MongoMapper::Plugins::PublishingLogic.with_status(is_activated) do
       # publishing logic will be active/deactive depending on the with_status() param
-    end
-
-
-#### `activate`/`deactivate`
-You can use this to set the publishing logic state permanently, for example in your controller if you want to implement an admin preview.
-
-    class ApplicationController < ActionController::Base
-      before_filter do
-        MongoMapper::Plugins::PublishingLogic.deactivate if (params[:preview] and current_admin)
-      end
     end
 
 
