@@ -16,8 +16,5 @@ SimpleCov.start 'rails' do
   add_group "Uploaders", "app/uploaders"
   add_group "Mailers", "app/mailers"
 
-  formatter SimpleCov::Formatter::MultiFormatter[
-    Coveralls::SimpleCov::Formatter,
-    SimpleCov::Formatter::HTMLFormatter
-  ]
+  formatter Coveralls::SimpleCov::Formatter
 end
