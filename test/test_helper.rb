@@ -1,6 +1,14 @@
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
 
+# NOTE this has to be at the top!
+begin
+  require 'coveralls'
+  Coveralls.wear!('rails')
+rescue LoadError
+  puts "Couldn't load 'coveralls' gem for test coverage"
+end
+
 require 'rubygems'
 require 'test/unit'
 require 'factory_girl'

@@ -32,3 +32,6 @@ tags
 *.*~
 *.vim
 coverage.vim
+
+# Coveralls.io
+.coveralls.yml
