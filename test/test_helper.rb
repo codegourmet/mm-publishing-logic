@@ -2,12 +2,8 @@
 ENV["RAILS_ENV"] = "test"
 
 # NOTE this has to be at the top!
-begin
-  require 'coveralls'
-  Coveralls.wear!('rails')
-rescue LoadError
-  puts "Couldn't load 'coveralls' gem for test coverage"
-end
+require 'coveralls'
+Coveralls.wear!('rails')
 
 require 'rubygems'
 require 'test/unit'
