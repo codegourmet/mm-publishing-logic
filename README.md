@@ -1,5 +1,6 @@
 # mm-publishing-logic
 
+[![Coverage Status](https://coveralls.io/repos/codegourmet/mm-publishing-logic/badge.png?branch=master)](https://coveralls.io/r/codegourmet/mm-publishing-logic)
 Publishing Logic for Rails/MongoMapper models
 
 ## Installation
