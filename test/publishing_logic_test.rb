@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'test_helper'
+require 'time-warp'
 
 class PublishingLogicTest < ActiveSupport::TestCase
 
@@ -50,6 +51,20 @@ class PublishingLogicTest < ActiveSupport::TestCase
 
     unpublished = [FactoryGirl.create(:page, publishing_end_date: PAST)]
     assert_unpublished(unpublished)
+  end
+
+
+  test "publishing_end_date holds when date changes" do
+    soon_unpublished = [
+      FactoryGirl.create(:page, publishing_end_date: TODAY)
+    ]
+    assert_published(soon_unpublished)
+
+    pretend_now_is(FUTURE)
+    assert_unpublished(soon_unpublished)
+
+    pretend_now_is(PAST)
+    assert_published(soon_unpublished)
   end
 
 

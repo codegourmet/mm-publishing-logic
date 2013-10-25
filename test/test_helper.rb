@@ -20,8 +20,9 @@ Dir["#{File.dirname(__FILE__)}/models/*.rb"].each {|file| require file}
 Dir["#{File.dirname(__FILE__)}/factories/*.rb"].each {|file| require file}
 
 TODAY = ActiveSupport::TimeZone["UTC"].now.beginning_of_day.to_date
-PAST = TODAY - 2.days
-FUTURE = TODAY + 2.days
+PAST = TODAY - 100.days
+NEAR_FUTURE = TODAY + 2.days
+FUTURE = TODAY + 100.days
 
 # mongomapper doesn't have transactions, so testing db will
 # accumulate data (and tests might fail on second run)
