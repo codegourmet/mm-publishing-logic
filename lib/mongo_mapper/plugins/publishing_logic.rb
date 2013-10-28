@@ -11,37 +11,60 @@ module MongoMapper
 
       included do
 
-        # published_state is a cached state to allow querying without duplicating any logic.
-        key :published_state, Boolean, default: false, required: true
-
         key :published_flag, Boolean, default: false, required: true
         key :publishing_date, Date, default: PublishingLogic::today.to_date, required: true
         key :publishing_end_date, Date, default: nil # optional
 
-        before_save :cache_published_state
-
         scope :published, lambda {
-          PublishingLogic::publishing_logic_active ?  where(published_state: true) : where()
+          if !PublishingLogic::publishing_logic_active
+            where()
+          else
+            where({
+              published_flag: true,
+              "$or" => [
+                {:publishing_date => nil},
+                {:publishing_date.gte => PublishingLogic::today}
+              ],
+              "$or" => [
+                {:publishing_end_date => nil},
+                {:publishing_end_date.gte => PublishingLogic::today}
+              ]
+            })
+          end
         }
 
         scope :unpublished, lambda {
-          PublishingLogic::publishing_logic_active ?  where(:published_state.ne => true) : where(:$not => true)
+          if !PublishingLogic::publishing_logic_active
+            where(:$not => true)
+          else
+            where("$or" => [
+              {:published_flag.ne => true},
+              {
+                :publishing_date.ne => nil,
+                :publishing_date.gt => PublishingLogic::today
+              },
+              {
+                :publishing_end_date.ne => nil,
+                :publishing_end_date.lt => PublishingLogic::today
+              }
+            ])
+          end
         }
 
         # prepared: published, but publishing start date is not yet reached
         # TODO test, doc
-        scope :prepared, lambda {
-          unpublished.where(published_flag: true, :publishing_date.gt => PublishingLogic::today)
-        }
+        #scope :prepared, lambda {
+        #  unpublished.where(published_flag: true, :publishing_date.gt => PublishingLogic::today)
+        #}
 
         # expired: published, but publishing end date is reached
         # TODO test, doc
-        scope :expired, lambda {
-          unpublished.where(
-            published_flag: true,
-            :publishing_end_date.ne => nil, :publishing_end_date.lt => PublishingLogic::today
-          )
-        }
+        #scope :expired, lambda {
+        #  unpublished.where(
+        #    published_flag: true,
+        #    :publishing_end_date.ne => nil, :publishing_end_date.lt => PublishingLogic::today
+        #  )
+        #}
 
       end
 
@@ -50,20 +73,11 @@ module MongoMapper
 
 
       def published?
-        PublishingLogic::publishing_logic_active ? determine_published_state : true
-      end
+        return true if !PublishingLogic::publishing_logic_active
 
-
-      def determine_published_state
         start_date_ok = (publishing_date <= PublishingLogic::today.to_date)
         end_date_ok = publishing_end_date.nil? || (publishing_end_date >= PublishingLogic::today.to_date)
         return self.published_flag && start_date_ok && end_date_ok
-      end
-
-
-      def cache_published_state
-        self.published_state = determine_published_state
-        return true
       end
 
 
