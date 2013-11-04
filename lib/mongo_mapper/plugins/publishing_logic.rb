@@ -23,7 +23,7 @@ module MongoMapper
               published_flag: true,
               "$or" => [
                 {:publishing_date => nil},
-                {:publishing_date.gte => PublishingLogic::today}
+                {:publishing_date.lte => PublishingLogic::today}
               ],
               "$or" => [
                 {:publishing_end_date => nil},
