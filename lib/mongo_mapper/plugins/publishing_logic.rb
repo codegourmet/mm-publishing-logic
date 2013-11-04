@@ -21,13 +21,16 @@ module MongoMapper
           else
             where({
               published_flag: true,
-              "$or" => [
-                {:publishing_date => nil},
-                {:publishing_date.lte => PublishingLogic::today}
-              ],
-              "$or" => [
-                {:publishing_end_date => nil},
-                {:publishing_end_date.gte => PublishingLogic::today}
+              "$and" => [
+                {"$or" => [
+                  {:publishing_date => nil},
+                  {:publishing_date.lte => PublishingLogic::today}
+                ]},
+
+                {"$or" => [
+                  {:publishing_end_date => nil},
+                  {:publishing_end_date.gte => PublishingLogic::today}
+                ]}
               ]
             })
           end
